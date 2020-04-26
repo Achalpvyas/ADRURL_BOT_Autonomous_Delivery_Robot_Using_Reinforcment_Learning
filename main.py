@@ -11,8 +11,8 @@ import algo
 
 # Main Function
 def main():
-  algo.q_learn()
-  
-  
+  q_table = algo.train()
+  print('The final Q table after training is:', q_table)
+  algo.test(q_table)
 if __name__ == '__main__':
   main()
