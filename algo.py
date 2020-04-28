@@ -8,7 +8,7 @@ Nalin Das (nalindas9@gmail.com)
 Graduate Student pursuing Masters in Robotics,
 University of Maryland, College Park
 """
-
+import random
 import env
 import numpy as np
 from copy import deepcopy
@@ -19,11 +19,16 @@ CAR = "c"
 ICE_CREAM = "i"
 EMPTY = "*"
 
-grid = [
-    [ICE_CREAM, EMPTY],
-    [ZOMBIE, CAR]
-]
-
+# Random map generator
+grid_elements = [ZOMBIE, ZOMBIE, EMPTY, EMPTY, EMPTY, EMPTY]
+grid = []
+for i in range(5):
+  if i == 0:
+    grid.append([random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements), ICE_CREAM])
+  elif i == 4:
+    grid.append([CAR, random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements)])  
+  else:
+    grid.append([random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements), random.choice(grid_elements)])
 
 # Defining the action set
 UP = 0
@@ -33,9 +38,9 @@ RIGHT = 3
 
 ACTIONS = [UP, DOWN, LEFT, RIGHT]
 
-start_state = env.State(grid=grid, car_pos=[1, 1])
-N_STATES = 4
-N_EPISODES = 20
+start_state = env.State(grid=grid, car_pos=[4, 0])
+N_STATES = 25
+N_EPISODES = 40
 
 MAX_EPISODE_STEPS = 100
 
@@ -125,6 +130,7 @@ def test(q_table):
     grid = state.grid
     for row in grid:
       print(' '.join(row))
+    print('')
     action = np.argmax(q_table[state])     
     next_state, reward, done = act(state, action)
     state = next_state
