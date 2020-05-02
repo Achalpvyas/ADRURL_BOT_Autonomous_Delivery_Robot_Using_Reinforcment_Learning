@@ -5,18 +5,35 @@ Authors:
 Nalin Das (nalindas9@gmail.com)
 Graduate Student pursuing Masters in Robotics,
 University of Maryland, College Park
+
+  elif grid_item == DESTINATION and pick_drop == False:
+      reward = 1000
+      is_done = True
+      new_grid[p[0]][p[1]] += PACKAGE
+  elif grid_item != DESTINATION and pick_drop == False:
+      reward = -500
+      is_done = True
+      new_grid[p[0]][p[1]] += PACKAGE
+  elif grid_item == SOURCE and pick_drop == True:
+      reward = 1000
+      is_done = False
+  elif grid_item != SOURCE and pick_drop == True:
+      reward = -500
+      is_done = False
 """
 import random
 import numpy as np
-eps = 0.2
+eps = 0.3
 q_table = dict()
 # Defining the action set
 UP = 0
 DOWN = 1
 LEFT = 2
 RIGHT = 3
+PICKUP = 4
+DROPOFF = 5
 
-ACTIONS = [UP, DOWN, LEFT, RIGHT]
+ACTIONS = [UP, DOWN, LEFT, RIGHT, PICKUP, DROPOFF]
 
 # State class inititalized with current grid and the car position in the grid
 class State:
