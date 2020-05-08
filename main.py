@@ -8,6 +8,15 @@ University of Maryland, College Park
 """
 import env
 import algo
+import random
+
+# Defining the map
+WALL = "|"
+ROBOT = "R"
+DESTINATION = "D"
+SOURCE = "S"
+PACKAGE = "p"
+EMPTY = "*"
 
 # Main Function
 def main():

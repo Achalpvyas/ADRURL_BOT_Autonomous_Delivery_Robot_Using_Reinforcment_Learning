@@ -51,7 +51,7 @@ ACTIONS = [UP, DOWN, LEFT, RIGHT, PICKUP, DROPOFF]
 
 start_state = env.State(grid=grid, car_pos=[2, 2])
 N_STATES = 500
-N_EPISODES = 250
+N_EPISODES = 300
 
 MAX_EPISODE_STEPS = 200
 
@@ -206,6 +206,7 @@ def test(q_table):
   for _ in range(MAX_EPISODE_STEPS):
     print('itr:', itr)
     grid = state.grid
+    grid = np.array(grid)
     for row in grid:
       print(' '.join(row))
     print('')
