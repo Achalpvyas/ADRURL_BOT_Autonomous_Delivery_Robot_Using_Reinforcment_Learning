@@ -5,21 +5,6 @@ Authors:
 Nalin Das (nalindas9@gmail.com)
 Graduate Student pursuing Masters in Robotics,
 University of Maryland, College Park
-
-  elif grid_item == DESTINATION and pick_drop == False:
-      reward = 1000
-      is_done = True
-      new_grid[p[0]][p[1]] += PACKAGE
-  elif grid_item != DESTINATION and pick_drop == False:
-      reward = -500
-      is_done = True
-      new_grid[p[0]][p[1]] += PACKAGE
-  elif grid_item == SOURCE and pick_drop == True:
-      reward = 1000
-      is_done = False
-  elif grid_item != SOURCE and pick_drop == True:
-      reward = -500
-      is_done = False
 """
 import random
 import numpy as np
