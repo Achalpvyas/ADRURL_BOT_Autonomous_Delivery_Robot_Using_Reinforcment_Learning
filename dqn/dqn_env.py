@@ -1,13 +1,27 @@
+"""
+DQN Environment
+
+Reference: 
+1. https://tiewkh.github.io/blog/deepqlearning-openaitaxi/
+2. https://medium.com/@gtnjuvin/my-journey-into-deep-q-learning-with-keras-and-gym-3e779cc12762
+
+Authors: 
+Nalin Das (nalindas9@gmail.com)
+Graduate Student pursuing Masters in Robotics,
+University of Maryland, College Park
+"""
+
 import random
 import os
 import numpy as np
 from collections import deque
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Embedding, Reshape
 from keras.optimizers import Adam
 import sys
 sys.path.insert(1, '/home/nalindas9/Documents/courses/spring_2020/enpm690-robot-learning/github/ADRURL_BOT_Autonomous_Delivery_Robot_Using_Reinforcment_Learning/qlearning')
 import algo
+import matplotlib.pyplot as plt
 
 # Agent class
 class Agent():
@@ -15,7 +29,7 @@ class Agent():
     self.weight_backup = "trained_weights.h5"
     self.state_size = state_size
     self.action_size = action_size
-    self.memory = deque(maxlen=2000)
+    self.memory = deque(maxlen=10000)
     self.learning_rate = 0.001
     self.gamma = 1.0
     self.exploration_rate = 1.0
@@ -28,7 +42,9 @@ class Agent():
     # Choosing Sequential Model here
     model = Sequential()
     # Adding the two 24x1 hidden layers here and one output layer
-    model.add(Dense(24, input_dim = self.state_size, activation = 'relu'))
+    model.add(Embedding(500, 10, input_length=1))
+    model.add(Reshape((10,)))
+    model.add(Dense(24, activation = 'relu'))
     model.add(Dense(24, activation = 'relu'))
     model.add(Dense(self.action_size, activation = 'linear')) 
     
@@ -46,7 +62,7 @@ class Agent():
   def act(self, state):
     if np.random.rand() <= self.exploration_rate: 
       return random.randrange(self.action_size)
-    act_values = self.brain.predict(state)
+    act_values = self.brain.predict(np.array([hash(state)]))
     return np.argmax(act_values[0])
     
   def remember(self, state, action, reward, next_state, done):
@@ -59,17 +75,21 @@ class Agent():
     for state, action, reward, next_state, done in sample_batch:
       target = reward
       if not done:
-        target = reward + self.gamma*np.amax(self.brain.predict(next_state)[0])
+        #print('Next State:', hash(next_state))
+        target = reward + self.gamma*np.amax(self.brain.predict(np.array([hash(next_state)])))
+        #print('Target:', target)
+      target_f = self.brain.predict(np.array([hash(state)]))
       target_f[0][action] = target
-      self.brain.fit(state, target_f, epochs=1, verbose=0)
-    if self.exploration_rate > exploration_min:
+      self.brain.fit(np.array([hash(state)]), target_f, epochs=1, verbose=0)
+    if self.exploration_rate > self.exploration_min:
       self.exploration_rate *= self.exploration_decay
+    #print('Exploration rate:', self.exploration_rate)
       
 # Adrurlbot Class
 class Adrurlbot():
   def __init__(self, start_state):
-    self.sample_batch_size = 32
-    self.episodes = 10000
+    self.sample_batch_size = 64
+    self.episodes = 20000
     self.state_size = 500
     self.action_size = 6
     self.agent = Agent(self.state_size, self.action_size)
@@ -79,17 +99,24 @@ class Adrurlbot():
     try:
       for index_episode in range(self.episodes):
         state = self.start_state
-        
         done = False
+        total_reward = 0
+        steps = 0
         picked_up = False
         while not done:
           action = self.agent.act(state)
           next_state, reward, done, picked_up = algo.act(state, action, picked_up)
+          total_reward += reward
           self.agent.remember(state, action, reward, next_state, done)
           state = next_state
+          steps += 1
         
-        print('Episode: {:}'.format(index_episode))  
+        print('Episode: {:},  Reward: {:}, Steps: {:}, len(self.memory): {:}, Exploration Rate: {:}'.format(index_episode, total_reward, steps, len(self.agent.memory),  self.agent.exploration_rate))  
+        plt.scatter(index_episode, total_reward, color='r')
+        plt.draw()
         self.agent.replay(self.sample_batch_size)
+        plt.pause(0.001)
+      plt.show()
     finally:
       self.agent.save_model()
       

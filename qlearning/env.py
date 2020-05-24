@@ -31,7 +31,7 @@ class State:
         return isinstance(other, State) and self.grid == other.grid and self.car_pos == other.car_pos
     
     def __hash__(self):
-        return hash(str(self.grid) + str(self.car_pos))
+        return int(abs(hash(str(self.grid) + str(self.car_pos))/(10**17)))
     
     def __str__(self):
         return f"State(grid={self.grid}, car_pos={self.car_pos})"

@@ -167,7 +167,7 @@ def act(state, action, picked_up):
   
   for row in new_grid:
     print(' '.join(row))
-        
+  print('')
   return env.State(grid=new_grid, car_pos=p), reward, is_done, picked_up
       
 def train():

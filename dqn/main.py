@@ -1,3 +1,16 @@
+"""
+Main script for DQN
+
+Reference: 
+1. https://tiewkh.github.io/blog/deepqlearning-openaitaxi/
+2. https://medium.com/@gtnjuvin/my-journey-into-deep-q-learning-with-keras-and-gym-3e779cc12762
+
+Authors: 
+Nalin Das (nalindas9@gmail.com)
+Graduate Student pursuing Masters in Robotics,
+University of Maryland, College Park
+"""
+
 import dqn_env
 import random
 import numpy as np
@@ -31,7 +44,6 @@ for i in range(5):
     
     
 start_state = env.State(grid=grid, car_pos=[2, 2])
-
 
 def main():
   adrurlbot = dqn_env.Adrurlbot(start_state)
